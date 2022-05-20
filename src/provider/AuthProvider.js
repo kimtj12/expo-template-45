@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useToast } from "native-base";
 import qs from "qs";
+import { registerNotification } from "../utils/registerNotification";
 
 const AuthContext = createContext();
 
@@ -100,6 +101,9 @@ const AuthProvider = (props) => {
     setUser(user);
     setIsLoggedIn(true);
     setPermission(user.permission ? user.permission : "user");
+
+    // Register Notification
+    await registerNotification(user);
 
     // Do Things to set the app
     const params = qs.stringify({

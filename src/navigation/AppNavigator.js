@@ -1,16 +1,21 @@
-import React, { useContext, useMemo, useState, useCallback } from "react";
+import React, { useContext, useMemo, useState, useCallback, useRef } from "react";
 import { AuthContext } from "../provider/AuthProvider";
 import AuthStack from "../screens/authStack";
 import * as SplashScreen from "expo-splash-screen";
 import MainTabBar from "./MainTabBar";
 import * as Font from "expo-font";
 import { View } from "react-native";
+import * as Notifications from "expo-notifications";
+import { useToast } from "native-base";
 // import { useColorScheme } from "react-native";
 
 export default function AppNavigator() {
   // const scheme = useColorScheme();
+  const toast = useToast();
   const { isInitialized, isLoggedIn, onAppStart } = useContext(AuthContext);
   const [appIsReady, setAppIsReady] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   useMemo(() => {
     async function prepare() {
@@ -35,6 +40,27 @@ export default function AppNavigator() {
     }
 
     prepare();
+
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      console.log("noti list", notification.request.content);
+
+      toast.show({
+        title: notification.request.content.title,
+        description: notification.request.content.body,
+        placement: "top",
+      });
+    });
+
+    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      console.log("tap", response);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
   }, []);
 
   const onLayoutRootView = useCallback(async () => {

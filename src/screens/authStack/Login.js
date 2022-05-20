@@ -10,8 +10,8 @@ import useAuth from "../../hooks/useAuth";
 export default function Login() {
   const navigation = useNavigation();
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("kimtj");
+  const [password, setPassword] = useState("zxc123++");
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   useEffect(() => {
