@@ -1,20 +1,19 @@
 import React, { createContext, useState, useMemo } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
 import { useToast } from "native-base";
 import qs from "qs";
-
-const key = "fnfgva2mrgz8gjb25b5c2racyk3rkhb67yns8jsawma28g58fqq5dxkekjzhyw4h";
 
 const AuthContext = createContext();
 
 const AuthProvider = (props) => {
   const toast = useToast();
   const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [permission, setPermission] = useState(null);
+
+  // Per App
   const [settings, setSettings] = useState({});
   const [shop, setShop] = useState({});
 
@@ -27,65 +26,31 @@ const AuthProvider = (props) => {
   const onAppStart = async () => {
     const _jwt = await AsyncStorage.getItem("jwt");
 
-    try {
-      if (_jwt) {
-        axios.defaults.headers.common.Authorization = "Bearer " + _jwt;
-
-        const result = await axios({
-          url: "/users/me",
-        });
-
-        const params = qs.stringify({
-          filters: {
-            users_permissions_users: {
-              id: {
-                $eq: result.data.id,
-              },
-            },
-          },
-        });
-
-        const { data } = await axios({
-          url: "/shops?" + params,
-        });
-
-        if (data.data.length !== 0) {
-          logout();
-          return;
-        }
-
-        setShop(data.data[0]);
-
-        console.log("got user data ID => ", result.data);
-        setUser(result.data);
-
-        setIsLoggedIn(true);
-
-        // if (result.data.notification) {
-        //   const token = await setNotification();
-        //   await registerNotification(token);
-        // }
-
-        // const { data } = await axios({
-        //   url: "/settings",
-        // });
-
-        // setSettings(data);
-      } else {
-        logout();
-      }
-    } catch (e) {
+    if (!_jwt) {
       logout();
-      console.log("start e", JSON.stringify(e));
+      setIsInitialized(true);
+      return;
     }
 
-    setIsInitialized(true);
+    try {
+      const { data } = await axios({
+        url: "/users/me",
+        headers: { Authorization: "Bearer " + _jwt },
+      });
+
+      await initUser(_jwt, data);
+    } catch (e) {
+      logout();
+      console.log("start error", JSON.stringify(e));
+    } finally {
+      setIsInitialized(true);
+    }
   };
 
   const login = async (identifier, password) => {
     try {
       delete axios.defaults.headers.common["Authorization"];
-      const result = await axios({
+      const { data } = await axios({
         url: "/auth/local",
         method: "POST",
         data: {
@@ -94,141 +59,82 @@ const AuthProvider = (props) => {
         },
       });
 
-      console.log("login", result.data);
-      const { jwt, user } = result.data;
-
-      const params = qs.stringify({
-        filters: {
-          users_permissions_users: {
-            id: {
-              $eq: result.data.id,
-            },
-          },
-        },
+      await initUser(data.jwt, data.user);
+    } catch (e) {
+      console.log("login error", JSON.stringify(e));
+      toast.show({
+        title: "로그인 실패",
+        description: "아이디/비밀번호를 확인해주세요",
+        placement: "top",
       });
-
-      axios.defaults.headers.common["Authorization"] = "Bearer " + jwt;
-      await AsyncStorage.setItem("jwt", jwt);
-
-      const { data } = await axios({
-        url: "/shops?" + params,
-      });
-
-      setShop(data.data[0]);
-
-      setUser(user);
-      setIsLoggedIn(true);
-      setPermission(user.permission ? user.permission : "user");
-
-      // if (user.notification) {
-      //   const token = await setNotification();
-      //   await registerNotification(token);
-      // }
-
-      // const { data } = await axios({
-      //   url: "/setting",
-      // });
-
-      // setSettings(data);
-    } catch (error) {
-      console.log(error);
-
-      // TODO TOAST
     }
   };
 
-  const join = async ({ username, password, email, phoneNumber, ad, nickname }) => {
+  const join = async ({ ...props }) => {
     try {
+      console.log(props);
       setIsInitialized(false);
-      const result = await axios({
+      const { data } = await axios({
         url: "/auth/local/register",
         method: "POST",
-        data: {
-          username,
-          password,
-          email,
-          name: "",
-          phoneNumber,
-          permission: "user",
-          adAgree: ad,
-          points: 0,
-          notification: ad,
-          nickname,
-        },
+        data: props,
       });
 
-      // console.log(result.data);
-      const { jwt, user } = result.data;
-      axios.defaults.headers.common["Authorization"] = "Bearer " + jwt;
-      await AsyncStorage.setItem("jwt", jwt);
-
-      if (user.phoneNumber === "01054232124") {
-        await axios({
-          url: "/point-histories",
-          method: "POST",
-          data: {
-            amount: 990000,
-            users_permissions_user: user.id,
-            reason: `포인트 충전`,
-            // point:
-          },
-        });
-
-        user.points = 990000;
-      }
-
-      setUser(user);
-      setPermission(user.permission ? user.permission : "user");
-      // setIsLoggedIn(true);
-      // if (ad) {
-      //   const token = await setNotification();
-      //   await registerNotification(token);
-      // }
-
-      // const { data } = await axios({
-      //   url: "/setting",
-      // });
-
-      // setSettings(data);
-
-      setIsInitialized(true);
+      await initUser(data.jwt, data.user);
     } catch (e) {
-      console.log(e.response);
-      setIsInitialized(true);
-      await Popup.show({
-        type: "Danger",
+      console.log("join error", JSON.stringify(e.response, null, 2));
+      toast.show({
         title: "회원가입 실패",
-        button: true,
-        buttonText: "확인",
-        textBody: "회원가입에 실패했습니다",
-        callback: () => Popup.hide(),
+        description: "잠시 후 다시 시도해주세요",
+        placement: "top",
       });
+    } finally {
+      setIsInitialized(true);
     }
   };
 
-  const refetchUser = async (modal) => {
-    const { data } = await axios({
-      url: "/users/me",
+  const initUser = async (jwt, user) => {
+    console.log("USER INIT => ", user.id);
+    axios.defaults.headers.common["Authorization"] = "Bearer " + jwt;
+    await AsyncStorage.setItem("jwt", jwt);
+    setUser(user);
+    setIsLoggedIn(true);
+    setPermission(user.permission ? user.permission : "user");
+
+    // Do Things to set the app
+    const params = qs.stringify({
+      filters: {
+        users_permissions_users: {
+          id: {
+            $eq: user.id,
+          },
+        },
+      },
     });
 
-    // console.log("got user data ID => ", result.data.id);
-    setUser(data);
+    const { data } = await axios({
+      url: "/shops?" + params,
+    });
+    // if (data.data.length === 0) {
+    //   logout();
+    //   return;
+    // }
+    setShop(data.data[0]);
   };
 
   return (
     <AuthContext.Provider
       value={{
-        onAppStart,
         isInitialized,
         isLoggedIn,
         user,
         permission,
+        onAppStart,
         login,
         logout,
         join,
-        setUser,
+        // Per App
         settings,
-        refetchUser,
         shop,
       }}
     >

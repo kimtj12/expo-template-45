@@ -8,6 +8,7 @@ import { API } from "./src/config";
 import { NativeBaseProvider, extendTheme, Text } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 // import THEME from "./src/tui/Theme";
+import { Platform } from "react-native";
 
 axios.defaults.baseURL = API;
 axios.defaults.headers["Content-Type"] = "application/json";
@@ -23,7 +24,24 @@ axios.interceptors.response.use(
   }
 );
 
+const isIos = Platform.OS === "ios";
+
 const theme = extendTheme({
+  colors: {
+    primary: {
+      50: "#efe5fd",
+      100: "#d4bff9",
+      200: "#b794f6",
+      300: "#9965f4",
+      400: "#7e3ff2",
+      500: "#6002ee",
+      600: "#5300e8",
+      700: "#3d00e0",
+      800: "#1c00db",
+      900: "#0000d6",
+    },
+  },
+
   fontConfig: {
     IBMPlex: {
       100: { normal: "IBMPlex_Thin" },
@@ -43,41 +61,36 @@ const theme = extendTheme({
     mono: "IBMPlex",
   },
 
-  primary: {
-    50: "#E3F2F9",
-    100: "#C5E4F3",
-    200: "#A2D4EC",
-    300: "#7AC1E4",
-    400: "#47A9DA",
-    500: "#0088CC",
-    600: "#007AB8",
-    700: "#006BA1",
-    800: "#005885",
-    900: "#003F5E",
-  },
   components: {
     Button: {
-      // Can simply pass default props to change default behaviour of components.
       baseStyle: {
-        rounded: "md",
+        fontWeight: "bold",
+        borderRadius: 8,
+        paddingTop: isIos ? 3 : "14px",
+        paddingBottom: isIos ? 3 : "14px",
       },
-      defaultProps: {
-        colorScheme: "rose",
+      sizes: {
+        md: {
+          _text: {
+            fontSize: 16,
+          },
+        },
       },
     },
     Input: {
-      baseStyle: {
-        borderWidth: 3,
-        borderRadius: "lg",
-        paddingTop: "12px",
-        paddingBottom: "12px",
-        paddingLeft: "16px",
-        fontWeight: "bold",
-        background: "#e9ecef",
+      baseStyle: ({ colorMode }) => {
+        return {
+          fontWeight: "bold",
+          borderRadius: 8,
+          paddingTop: isIos ? 4 : 3,
+          paddingBottom: isIos ? 4 : 3,
+          marginBottom: 4,
+        };
       },
       defaultProps: {
-        size: "md",
-        // variant: "filled",
+        variant: "filled",
+        fontSize: 14,
+        autoCapitalize: "none",
       },
     },
   },

@@ -2,7 +2,7 @@ import React, { useContext, useMemo, useState, useCallback } from "react";
 import { AuthContext } from "../provider/AuthProvider";
 import AuthStack from "../screens/authStack";
 import * as SplashScreen from "expo-splash-screen";
-// import MainTabBar from "./MainTabBar";
+import MainTabBar from "./MainTabBar";
 import * as Font from "expo-font";
 import { View } from "react-native";
 // import { useColorScheme } from "react-native";
@@ -46,7 +46,7 @@ export default function AppNavigator() {
   return (
     <View onLayout={onLayoutRootView} style={{ flex: 1 }}>
       {!isLoggedIn && <AuthStack />}
-      {/* {isLoggedIn && <MainTabBar />} */}
+      {isLoggedIn && <MainTabBar />}
     </View>
   );
 }
