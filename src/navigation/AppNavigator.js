@@ -6,19 +6,18 @@ import MainTabBar from "./MainTabBar";
 import * as Font from "expo-font";
 import { View } from "react-native";
 import * as Notifications from "expo-notifications";
-import { useToast } from "native-base";
+import { Toast } from "react-native-alert-notification";
 // import { useColorScheme } from "react-native";
 
 export default function AppNavigator() {
   // const scheme = useColorScheme();
-  const toast = useToast();
   const { isInitialized, isLoggedIn, onAppStart } = useContext(AuthContext);
   const [appIsReady, setAppIsReady] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
 
   useMemo(() => {
-    async function prepare() {
+    async function initApp() {
       try {
         await SplashScreen.preventAutoHideAsync();
         await Font.loadAsync({
@@ -39,22 +38,23 @@ export default function AppNavigator() {
       }
     }
 
-    prepare();
+    initApp();
 
     // This listener is fired whenever a notification is received while the app is foregrounded
     notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
-      console.log("noti list", notification.request.content);
+      // console.log("noti list", notification.request.content);
+      const noti = notification.request.content;
 
-      toast.show({
-        title: notification.request.content.title,
-        description: notification.request.content.body,
-        placement: "top",
+      Toast.show({
+        type: "SUCCESS",
+        title: noti.title,
+        textBody: noti.body,
       });
     });
 
     // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
     responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log("tap", response);
+      // console.log("tap", response.notification.request.content);
     });
 
     return () => {

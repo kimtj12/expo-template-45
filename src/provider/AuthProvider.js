@@ -1,14 +1,13 @@
 import React, { createContext, useState, useMemo } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { useToast } from "native-base";
 import qs from "qs";
 import { registerNotification } from "../utils/registerNotification";
+import { Dialog } from "react-native-alert-notification";
 
 const AuthContext = createContext();
 
 const AuthProvider = (props) => {
-  const toast = useToast();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
@@ -63,10 +62,11 @@ const AuthProvider = (props) => {
       await initUser(data.jwt, data.user);
     } catch (e) {
       console.log("login error", JSON.stringify(e));
-      toast.show({
+      Dialog.show({
         title: "로그인 실패",
-        description: "아이디/비밀번호를 확인해주세요",
-        placement: "top",
+        type: "DANGER",
+        textBody: "아이디/비밀번호를 확인해주세요",
+        button: "닫기",
       });
     }
   };
@@ -84,10 +84,11 @@ const AuthProvider = (props) => {
       await initUser(data.jwt, data.user);
     } catch (e) {
       console.log("join error", JSON.stringify(e.response, null, 2));
-      toast.show({
+      Dialog.show({
         title: "회원가입 실패",
-        description: "잠시 후 다시 시도해주세요",
-        placement: "top",
+        type: "DANGER",
+        textBody: "잠시 후 다시 시도해주세요",
+        button: "닫기",
       });
     } finally {
       setIsInitialized(true);

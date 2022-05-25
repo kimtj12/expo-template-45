@@ -9,6 +9,7 @@ import { NativeBaseProvider, extendTheme, Text } from "native-base";
 import { NavigationContainer } from "@react-navigation/native";
 // import THEME from "./src/tui/Theme";
 import { Platform } from "react-native";
+import { Root as NotificationProvider } from "react-native-alert-notification";
 
 axios.defaults.baseURL = API;
 axios.defaults.headers["Content-Type"] = "application/json";
@@ -100,10 +101,12 @@ export default function App() {
   return (
     <NavigationContainer>
       <NativeBaseProvider theme={theme}>
-        {/* <NavigationContainer theme={THEME.light}> */}
-        <AuthProvider>
-          <AppNavigator />
-        </AuthProvider>
+        <NotificationProvider>
+          {/* <NavigationContainer theme={THEME.light}> */}
+          <AuthProvider>
+            <AppNavigator />
+          </AuthProvider>
+        </NotificationProvider>
       </NativeBaseProvider>
     </NavigationContainer>
   );

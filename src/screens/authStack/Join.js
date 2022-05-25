@@ -1,11 +1,11 @@
-import { Center, Checkbox, Input, Text, useToast } from "native-base";
+import { Center, Checkbox, Input, Text } from "native-base";
 import React, { useState, useEffect } from "react";
+import { Dialog } from "react-native-alert-notification";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import TButton from "../../components/TButton";
 import useAuth from "../../hooks/useAuth";
 
 export default function Join() {
-  const toast = useToast();
   const { join } = useAuth();
   const permission = "user";
   const [username, setUsername] = useState("");
@@ -18,10 +18,11 @@ export default function Join() {
 
   const handleJoin = () => {
     if (password.length < 6) {
-      toast.show({
+      Dialog.show({
         title: "비밀번호 확인",
-        description: "비밀번호를 6자리 이상 해주세요",
-        placement: "top",
+        type: "DANGER",
+        textBody: "비밀번호를 6자리 이상으로 입력해주세요",
+        button: "확인",
       });
       return;
     }
@@ -42,7 +43,9 @@ export default function Join() {
         keyboardType="phone-pad"
       />
 
-      <TButton onPress={handleJoin}>회원가입</TButton>
+      <TButton onPress={handleJoin} isDisabled={!username || !password || !email || !name || !phoneNumber}>
+        회원가입
+      </TButton>
     </KeyboardAwareScrollView>
   );
 }
