@@ -3,7 +3,7 @@ import { useTheme } from "native-base";
 import DevPlaceholderScreen from "../../components/navigation/DevPlaceholderScreen";
 
 const Stack = createStackNavigator();
-const StackNavigator = () => {
+export default () => {
   const { colors } = useTheme();
 
   return (
@@ -34,5 +34,3 @@ const StackNavigator = () => {
     </Stack.Navigator>
   );
 };
-
-export default StackNavigator;
