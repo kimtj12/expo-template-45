@@ -1,0 +1,33 @@
+{
+  "build": {
+    "production": {
+      "releaseChannel": "prod",
+      "ios": {
+        "autoIncrement": true
+      },
+      "android": {
+        "autoIncrement": true
+      }
+    },
+    "development": {
+      "releaseChannel": "dev"
+    },
+    "preview": {
+      "developmentClient": false,
+      "distribution": "internal",
+      "releaseChannel": "dev"
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "swisstj@me.com",
+        "appleTeamId": "6N25U37FAX"
+      }
+    }
+  },
+  "cli": {
+    "version": ">= 0.35.0",
+    "requireCommit": true
+  }
+}
