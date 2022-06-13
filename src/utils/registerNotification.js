@@ -27,7 +27,7 @@ export const registerNotification = async (user) => {
     });
   }
 
-  console.log("expoToken", expoToken);
+  console.log("expoToken => ", expoToken);
 
   try {
     await axios({

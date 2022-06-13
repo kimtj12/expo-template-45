@@ -13,26 +13,6 @@ export default function MyScreen() {
   const navigation = useNavigation();
   const { user, logout } = useAuth();
 
-  // const getData = async () => {
-  //   const result = await axios({
-  //     url: "/memberships",
-  //     params: {
-  //       users_permissions_user: user.id,
-  //       active: true,
-  //     },
-  //   });
-
-  //   console.log(result.data);
-  //   setFreeList(result.data.filter((item) => item.paid === false));
-  //   setPaidList(result.data.filter((item) => item.paid === true));
-  // };
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     if (user.id) getData();
-  //   }, [user])
-  // );
-
   return (
     <>
       <StatusBar style="dark" />
@@ -40,39 +20,6 @@ export default function MyScreen() {
         <Text color="primary.500" fontSize="2xl" fontWeight="bold" textAlign="center">
           {user.name}
         </Text>
-        {/* <Text style={{ fontWeight: "bold" }} textAlign="center">
-          {parsePhone(user.phoneNumber)} | {user.email}
-        </Text> */}
-
-        {/* <Divider /> */}
-        {/* <Box flexDir="row" mt={4}>
-          <Box flex={1}>
-            <Text textAlign="center" fontSize="lg">
-              {freeList.length}개
-            </Text>
-            <Text textAlign="center" fontSize="xs" color="gray.400">
-              무료 리딩방
-            </Text>
-          </Box>
-
-          <Box flex={1} borderRightWidth={1} borderRightColor="gray.300" borderLeftWidth={1} borderLeftColor="gray.300">
-            <Text textAlign="center" fontSize="lg">
-              {paidList.length}개
-            </Text>
-            <Text textAlign="center" fontSize="xs" color="gray.400">
-              유료 리딩방
-            </Text>
-          </Box>
-
-          <Box flex={1}>
-            <Text textAlign="center" fontSize="lg">
-              {user.points === 0 ? "0" : parseMoney(user.points)}P
-            </Text>
-            <Text textAlign="center" fontSize="xs" color="gray.400">
-              보유 포인트
-            </Text>
-          </Box>
-        </Box> */}
       </Box>
 
       <ScrollView contentContainerStyle={{ paddingTop: 15 }}>

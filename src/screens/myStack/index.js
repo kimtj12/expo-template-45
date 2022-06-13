@@ -1,7 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "native-base";
 import MyScreen from "./MyScreen";
-// import Settings from "./Settings";
+import Settings from "./Settings";
 // import UserUpdate from "./UserUpdate";
 
 const Stack = createStackNavigator();
@@ -31,13 +31,13 @@ const MyStack = () => {
           headerTitleAlign: "left",
         }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="Settings"
         component={Settings}
         options={{
           title: "설정",
         }}
-      /> */}
+      />
       {/* <Stack.Screen
         name="UserUpdate"
         component={UserUpdate}

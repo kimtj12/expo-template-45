@@ -107,24 +107,25 @@ const AuthProvider = (props) => {
     await registerNotification(user);
 
     // Do Things to set the app
-    const params = qs.stringify({
-      filters: {
-        users_permissions_users: {
-          id: {
-            $eq: user.id,
-          },
-        },
-      },
-    });
 
-    const { data } = await axios({
-      url: "/shops?" + params,
-    });
+    // const params = qs.stringify({
+    //   filters: {
+    //     users_permissions_users: {
+    //       id: {
+    //         $eq: user.id,
+    //       },
+    //     },
+    //   },
+    // });
+
+    // const { data } = await axios({
+    //   url: "/shops?" + params,
+    // });
     // if (data.data.length === 0) {
     //   logout();
     //   return;
     // }
-    setShop(data.data[0]);
+    // setShop(data.data[0]);
   };
 
   return (
@@ -140,7 +141,6 @@ const AuthProvider = (props) => {
         join,
         // Per App
         settings,
-        shop,
       }}
     >
       {props.children}
