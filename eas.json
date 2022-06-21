@@ -1,7 +1,6 @@
 {
   "build": {
     "production": {
-      "releaseChannel": "prod",
       "channel": "prod",
       "ios": {
         "autoIncrement": true
@@ -11,13 +10,11 @@
       }
     },
     "development": {
-      "releaseChannel": "dev",
       "channel": "dev"
     },
     "preview": {
       "developmentClient": false,
       "distribution": "internal",
-      "releaseChannel": "dev",
       "channel": "dev"
     }
   },
